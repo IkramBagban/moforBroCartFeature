@@ -192,13 +192,15 @@ const Card = ({ product }) => {
                   title={item.item.service}
                   style={[
                     styles.serviceButton,
-                    selectedService == item.item.service
+                    selectedService.type == item.item.service
                       ? styles.selectedButton
                       : {},
                   ]}
                   onPress={() => serviceButtonHandler(item.item)}
                   color={
-                    selectedService == item.item.service ? 'white' : 'black'
+                    selectedService.type == item.item.service
+                      ? 'white'
+                      : 'black'
                   }
                 />
               </>
@@ -218,11 +220,14 @@ const Card = ({ product }) => {
               title={item.item.title}
               style={[
                 styles.deliveryButton,
-                selectedDelivery == item.item.title
+                selectedDelivery.type == item.item.title
                   ? styles.selectedButton
                   : {},
               ]}
               onPress={() => deliveryButtonHandler(item.item)}
+              color={
+                selectedDelivery.type == item.item.title ? 'white' : 'black'
+              }
             />
           )}
           horizontal={true}
