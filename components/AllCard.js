@@ -36,22 +36,22 @@ const renderTabBar = (props) => (
 
 const AllCard = () => {
   const navigation = useNavigation();
-  const {
-    data: products = [],
-    isLoading: productsLoading,
-    isFetching,
-    error,
-    fetch,
-  } = useGetProductsQuery();
+  // const {
+  //   data: products = [],
+  //   isLoading: productsLoading,
+  //   isFetching,
+  //   error,
+  //   fetch,
+  // } = useGetProductsQuery();
 
-  if (error) {
-    Alert.alert(error);
-  }
+  // if (error) {
+  //   Alert.alert(error);
+  // }
 
   const totalPrice = useSelector(selectCartTotalPrice);
   const totalQty = useSelector(selectCartTotalQuantity);
 
-  // const [products, setProducts] = useState(data);
+  const [products, setProducts] = useState(data);
   const [isLoading, setIsLoading] = useState(true);
   const [index, setIndex] = useState(0);
 

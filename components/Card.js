@@ -49,11 +49,14 @@ const Card = ({ product }) => {
 
   const [isMounted, setIsMounted] = useState(false);
   const [selectedService, setSelectedService] = useState(
-    cartItem ? cartItem.service : { type: '', price: 1 }
+    cartItem ? cartItem.service : { type: undefined, price: 1 }
   );
   const [selectedDelivery, setSelectedDelivery] = useState(
-    cartItem ? cartItem.delivery : { type: '', price: 1 }
+    cartItem ? cartItem.delivery : { type: undefined, price: 1 }
   );
+
+  const isDisabled = !Boolean(cartItem?.quantity > 0);
+  // const hasServiceAndDelivery = Boolean(selectedService && selectedDelivery);
 
   const dispatch = useDispatch();
   const delivery = [
@@ -71,9 +74,9 @@ const Card = ({ product }) => {
   }, [product]);
 
   useEffect(() => {
-    console.log('cartItem: ', cartItem);
-    console.log('selectedService changed to: ', selectedService.type);
-    console.log('selectedDelivery changed to: ', selectedDelivery.type);
+    // console.log('cartItem: ', cartItem);
+    // console.log('selectedService changed to: ', selectedService.type);
+    // console.log('selectedDelivery changed to: ', selectedDelivery.type);
     setIsMounted(true);
   }, [cartItem, selectedService, selectedDelivery]);
 
@@ -96,6 +99,16 @@ const Card = ({ product }) => {
   }
 
   function increaseQtyHandler() {
+    if (!selectedService.type)
+      return Platform.OS === 'web'
+        ? alert('Please select a service')
+        : Alert.alert('Please select a service');
+
+    if (!selectedService.type)
+      return Platform.OS === 'web'
+        ? alert('Please select delivery')
+        : Alert.alert('Please select delivery');
+
     if (selectedService) {
       cartItem
         ? dispatch(
@@ -172,10 +185,9 @@ const Card = ({ product }) => {
           <Button
             title="-"
             onPress={decreaseQtyHandler}
-            style={styles.quantityButton}
+            style={[styles.quantityButton, isDisabled && styles.disabledButton]}
             color={Colors.Primary500}
-            // disabled={!Boolean(cartItem?.quantity > 0)}
-            disabled={true}
+            disabled={isDisabled}
           />
         </View>
       </View>
@@ -321,6 +333,9 @@ const styles = StyleSheet.create({
   selectedButton: {
     backgroundColor: Colors.primary500,
     color: 'white',
+  },
+  disabledButton: {
+    opacity: '0.3',
   },
   deliveryContainer: {
     flexDirection: 'row',

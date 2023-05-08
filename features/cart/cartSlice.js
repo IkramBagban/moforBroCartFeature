@@ -35,7 +35,7 @@ const cartSlice = createSlice({
       const { id, name, quantity, category, service, delivery } =
         action.payload;
 
-      console.log(`Adding item with id ${id} to cart`);
+      // console.log(`Adding item with id ${id} to cart`);
 
       // const existingItem = state.products.find((item) => item.id === id);
       // if (existingItem) {
@@ -50,64 +50,64 @@ const cartSlice = createSlice({
         delivery,
       });
       // }
-      console.log(`Successfully added item with id ${id} to cart`);
+      // console.log(`Successfully added item with id ${id} to cart`);
     },
 
     removeFromCart: (state, action) => {
       const id = action.payload;
-      console.log(`removing item ${id} from store`);
+      // console.log(`removing item ${id} from store`);
       state.products = state.products.filter((item) => item.id !== id);
-      console.log(`successfully removed ${id} from store`);
+      // console.log(`successfully removed ${id} from store`);
     },
 
     updateCartItemQuantity: (state, action) => {
       const { id, quantity } = action.payload;
-      // console.log('updates: ', { id, quantity });
-      console.log(`updating item ${id} to quantity ${quantity}`);
+      console.log('updates: ', { id, quantity });
+      // console.log(`updating item ${id} to quantity ${quantity}`);
       const existingItem = state.products.find((item) => item.id === id);
       if (existingItem) {
         existingItem.quantity = quantity;
-        console.log(`Successfully updated item ${id}`);
+        // console.log(`Successfully updated item ${id}`);
       }
-      console.log(`Item ${id} not found`);
+      // console.log(`Item ${id} not found`);
     },
 
     clearCart: (state) => {
-      console.log('Clearing out cart');
+      // console.log('Clearing out cart');
       return [];
     },
 
     updateItemServiceType: (state, action) => {
       const { id, serviceType, servicePrice } = action.payload;
-      console.log(`Updating item ${id} service`);
+      // console.log(`Updating item ${id} service`);
       const item = state.products.find((item) => item.id === id);
-      console.log(item);
+      // console.log(item);
       if (item) {
         item.service = {
           type: serviceType,
           price: servicePrice,
         };
-        console.log(
-          `Successfully updated Item service ${item.id} to ${item.service.type}`
-        );
+        // console.log(
+        //   `Successfully updated Item service ${item.id} to ${item.service.type}`
+        // );
       }
-      console.log(`item ${id} not found`);
+      // console.log(`item ${id} not found`);
     },
 
     updateItemDeliveryType: (state, action) => {
       const { id, deliveryType, deliveryPrice } = action.payload;
-      console.log(`Updating item ${id} delivery`);
+      // console.log(`Updating item ${id} delivery`);
       const item = state.products.find((item) => item.id === id);
       if (item) {
         item.delivery = {
           type: deliveryType,
           price: deliveryPrice,
         };
-        console.log(
-          `Successfully updated item ${item.id} delivery to ${item.delivery.type}`
-        );
+        // console.log(
+        //   `Successfully updated item ${item.id} delivery to ${item.delivery.type}`
+        // );
       }
-      console.log(`Item ${id} not found`);
+      // console.log(`Item ${id} not found`);
     },
   },
 });
