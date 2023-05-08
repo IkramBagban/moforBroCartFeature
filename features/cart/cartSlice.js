@@ -165,7 +165,7 @@ export const selectCartTotalQuantity = createSelector(
       return totalQty + cartItem.quantity;
     }, 0);
 
-    return parseFloat(price.toFixed(2));
+    return Number(price.toFixed(2));
   }
 );
 
@@ -180,6 +180,6 @@ export const selectItemTotalPrice = createSelector(
     // console.log('total price: ', item);
     if (!item) return 0;
     const price = item.quantity * item.service.price * item.delivery.price;
-    return parseFloat(price.toFixed(2));
+    return Number(price.toFixed(2));
   }
 );
