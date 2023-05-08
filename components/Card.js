@@ -10,6 +10,7 @@ import {
 import React, { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Button from './Button';
+import Toast from 'react-native-toast-message';
 import { Colors } from '../constants/colors';
 // import {
 //   addToCart,
@@ -100,14 +101,16 @@ const Card = ({ product }) => {
 
   function increaseQtyHandler() {
     if (!selectedService.type)
-      return Platform.OS === 'web'
-        ? alert('Please select a service')
-        : Alert.alert('Please select a service');
+      return Toast.show({
+        type: 'error',
+        text1: 'Please select a service',
+      });
 
     if (!selectedDelivery.type)
-      return Platform.OS === 'web'
-        ? alert('Please select delivery')
-        : Alert.alert('Please select delivery');
+      return Toast.show({
+        type: 'error',
+        text1: 'Please select delivery',
+      });
 
     if (selectedService) {
       cartItem
@@ -117,7 +120,7 @@ const Card = ({ product }) => {
               quantity: cartItem.quantity + 1,
             })
           )
-        : dispatch(
+        : (dispatch(
             addToCart({
               id: product.id,
               name: product.item_name,
@@ -126,7 +129,11 @@ const Card = ({ product }) => {
               service: selectedService,
               delivery: selectedDelivery,
             })
-          );
+          ),
+          Toast.show({
+            type: 'success',
+            text1: 'Added product to cart',
+          }));
     } else
       Platform.OS == 'web'
         ? alert('Select a service')
