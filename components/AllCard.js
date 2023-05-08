@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, Dimensions } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  Dimensions,
+  Alert,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Colors } from '../constants/colors';
 import Card from './Card';
@@ -36,6 +43,10 @@ const AllCard = () => {
     error,
     fetch,
   } = useGetProductsQuery();
+
+  if (error) {
+    Alert.alert(error);
+  }
 
   const totalPrice = useSelector(selectCartTotalPrice);
   const totalQty = useSelector(selectCartTotalQuantity);

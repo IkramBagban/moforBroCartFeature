@@ -30,6 +30,7 @@ import {
   updateItemServiceType,
   updateItemDeliveryType,
 } from '../features/cart/cartSlice';
+import { Platform } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 const Card = ({ product }) => {
@@ -53,7 +54,6 @@ const Card = ({ product }) => {
   const [selectedDelivery, setSelectedDelivery] = useState(
     cartItem ? cartItem.delivery : { type: '', price: 1 }
   );
-  // const [quantity, setQuantity] = useState(cartItem.quantity ?? 0);
 
   const dispatch = useDispatch();
   const delivery = [
@@ -62,9 +62,6 @@ const Card = ({ product }) => {
   ];
 
   let deliveryType = '1';
-  // let filtered = product.pricing?.filter(
-  //   (obj) => obj.deliveryType == deliveryType && obj.emirate_id === '3'
-  // );
   const filtered = useMemo(() => {
     return product.pricing
       ?.filter(
@@ -73,52 +70,12 @@ const Card = ({ product }) => {
       .map(({ service, price }) => ({ service, price }));
   }, [product]);
 
-  // let others = useSelector((state) => state.cart.others);
-  // let idx = others.findIndex((i) => i.itemID === product.itemID);
-  // let qty = others[idx]?.qty;
-  // let cartTotal = others[idx]?.total;
-  // // let selectedBtn = others[idx]?.selectedButton;
-  // useEffect(() => {
-  //   setQuantity(qty || 0);
-  //   setTotal(cartTotal || 0);
-  //   // setSelectedButton(selectedBtn || '')
-  //   // console.log('selected button', selectedButton);
-  // }, []);
-
-  // useEffect(() => {
-  //   if (selectedButton) {
-  //     quantity > 0 && dispatch(addToCart({ product: product }));
-  //     quantity == 0 && dispatch(removeItem({ itemID: product.itemID }));
-  //     dispatch(
-  //       updateOthers({
-  //         others: {
-  //           qty: quantity ?? 0,
-  //           total,
-  //           itemID: product.itemID,
-  //           deliveryPrice: deliveryPrice,
-  //           selectedDelivery: selectedDelivery,
-  //           selectedButton: selectedButton,
-  //         },
-  //       })
-  //     );
-
-  //     serviceButtonHandler(serviceItem);
-  //     dispatch(
-  //       getTotal({
-  //         itemID: product.itemID,
-  //         service: serviceItem.item.service,
-  //         deliveryType: deliveryType,
-  //       })
-  //     );
-  //   }
-  // }, [quantity, serviceItem, selectedButton, deliveryType]);
-
   useEffect(() => {
     console.log('cartItem: ', cartItem);
     console.log('selectedService changed to: ', selectedService.type);
     console.log('selectedDelivery changed to: ', selectedDelivery.type);
     setIsMounted(true);
-  }, [cartItem, selectedService]);
+  }, [cartItem, selectedService, selectedDelivery]);
 
   function decreaseQtyHandler() {
     if (selectedService) {
@@ -132,7 +89,10 @@ const Card = ({ product }) => {
               })
             )
         : {};
-    } else Alert.alert('please Select Any Serivce');
+    } else
+      Platform.OS == 'web'
+        ? alert('Select a service')
+        : Alert.alert('please Select Any Serivce');
   }
 
   function increaseQtyHandler() {
@@ -154,38 +114,44 @@ const Card = ({ product }) => {
               delivery: selectedDelivery,
             })
           );
-    } else Alert.alert('please Select Any Serivce');
+    } else
+      Platform.OS == 'web'
+        ? alert('Select a service')
+        : Alert.alert('please Select Any Serivce');
   }
 
   function serviceButtonHandler(service) {
-    console.log(service);
-    setSelectedService({
+    // console.log(service);
+    const s = {
       type: service.service,
       price: Number(parseFloat(service.price).toFixed(2)) ?? 1,
-    });
-    console.log(selectedService);
+    };
+    setSelectedService(s);
+    // console.log(selectedService);
     cartItem &&
       dispatch(
         updateItemServiceType({
           id: product.id,
-          serviceType: selectedService.type,
-          servicePrice: selectedService.price,
+          serviceType: s.type,
+          servicePrice: s.price,
         })
       );
   }
+
   function deliveryButtonHandler(delivery) {
-    console.log(delivery);
-    setSelectedDelivery({
+    // console.log(delivery);
+    const d = {
       type: delivery.title,
       price: Number(parseFloat(delivery.price).toFixed(2)) ?? 1,
-    });
-    console.log(selectedDelivery);
+    };
+    setSelectedDelivery(d);
+    // console.log(selectedDelivery);
     cartItem &&
       dispatch(
         updateItemDeliveryType({
           id: product.id,
-          deliveryType: selectedDelivery.type,
-          deliveryPrice: selectedDelivery.price,
+          deliveryType: d.type,
+          deliveryPrice: d.price,
         })
       );
   }
@@ -208,7 +174,8 @@ const Card = ({ product }) => {
             onPress={decreaseQtyHandler}
             style={styles.quantityButton}
             color={Colors.Primary500}
-            disabled={!Boolean(cartItem?.quantity > 0)}
+            // disabled={!Boolean(cartItem?.quantity > 0)}
+            disabled={true}
           />
         </View>
       </View>
@@ -225,8 +192,9 @@ const Card = ({ product }) => {
                   title={item.item.service}
                   style={[
                     styles.serviceButton,
-                    selectedService == item.item.service &&
-                      styles.selectedButton,
+                    selectedService == item.item.service
+                      ? styles.selectedButton
+                      : {},
                   ]}
                   onPress={() => serviceButtonHandler(item.item)}
                   color={
@@ -250,7 +218,9 @@ const Card = ({ product }) => {
               title={item.item.title}
               style={[
                 styles.deliveryButton,
-                selectedDelivery == item.item.title && styles.selectedButton,
+                selectedDelivery == item.item.title
+                  ? styles.selectedButton
+                  : {},
               ]}
               onPress={() => deliveryButtonHandler(item.item)}
             />
