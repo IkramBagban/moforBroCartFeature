@@ -104,7 +104,7 @@ const Card = ({ product }) => {
         ? alert('Please select a service')
         : Alert.alert('Please select a service');
 
-    if (!selectedService.type)
+    if (!selectedDelivery.type)
       return Platform.OS === 'web'
         ? alert('Please select delivery')
         : Alert.alert('Please select delivery');
