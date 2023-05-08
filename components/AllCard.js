@@ -20,6 +20,7 @@ import {
   selectCartTotalPrice,
   selectCartTotalQuantity,
 } from '../features/cart/cartSlice';
+import { Toast } from 'react-native-toast-message/lib/src/Toast';
 
 const renderTabBar = (props) => (
   <TabBar
@@ -87,7 +88,14 @@ const AllCard = () => {
         />
         <Button
           title="Next"
-          onPress={() => navigation.navigate('SelectService')}
+          onPress={() =>
+            totalQty > 0
+              ? navigation.navigate('SelectService')
+              : Toast.show({
+                  type: 'error',
+                  text1: 'Please add a product to cart',
+                })
+          }
         />
       </View>
     );
