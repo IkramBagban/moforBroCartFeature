@@ -149,23 +149,23 @@ export const selectCartItemById = createSelector(
 
 export const selectCartTotalPrice = createSelector(selectCart, (cartState) => {
   if (!Boolean(cartState.products.length)) return 0;
-  return cartState.products.reduce((totalPrice, cartItem) => {
+  const price = cartState.products.reduce((totalPrice, cartItem) => {
     return (
       totalPrice +
       cartItem.quantity * cartItem.service.price * cartItem.delivery.price
     );
   }, 0);
+
+  return parseFloat(price.toFixed(2));
 });
 
 export const selectCartTotalQuantity = createSelector(
   selectCart,
   (cartState) => {
     if (!Boolean(cartState.products.length)) return 0;
-    const price = cartState.products.reduce((totalQty, cartItem) => {
+    return cartState.products.reduce((totalQty, cartItem) => {
       return totalQty + cartItem.quantity;
     }, 0);
-
-    return Number(price.toFixed(2));
   }
 );
 
