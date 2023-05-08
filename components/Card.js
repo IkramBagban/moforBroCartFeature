@@ -33,9 +33,11 @@ import {
 
 const { width, height } = Dimensions.get('window');
 const Card = ({ product }) => {
-  const item = useSelector((state) => selectCartItemById(state, product.id));
+  const cartItem = useSelector((state) =>
+    selectCartItemById(state, product.id)
+  );
 
-  const [cartItem, setCartItem] = useState(item);
+  // const [cartItem, setCartItem] = useState(item);
 
   const cartItemPrice = useSelector((state) =>
     selectItemTotalPrice(state, product.id)
@@ -113,7 +115,8 @@ const Card = ({ product }) => {
 
   useEffect(() => {
     console.log('cartItem: ', cartItem);
-    console.log('selectedService: ', selectedService);
+    console.log('selectedService changed to: ', selectedService.type);
+    console.log('selectedDelivery changed to: ', selectedDelivery.type);
     setIsMounted(true);
   }, [cartItem, selectedService]);
 
@@ -124,7 +127,7 @@ const Card = ({ product }) => {
           ? dispatch(removeFromCart(cartItem.id))
           : dispatch(
               updateCartItemQuantity({
-                itemId: cartItem.id,
+                id: cartItem.id,
                 quantity: cartItem.quantity - 1,
               })
             )
@@ -137,14 +140,14 @@ const Card = ({ product }) => {
       cartItem
         ? dispatch(
             updateCartItemQuantity({
-              itemId: cartItem?.id,
+              id: cartItem?.id,
               quantity: cartItem.quantity + 1,
             })
           )
         : dispatch(
             addToCart({
               id: product.id,
-              name: product.name,
+              name: product.item_name,
               quantity: 1,
               category: product.item_cat1,
               service: selectedService,
@@ -187,11 +190,7 @@ const Card = ({ product }) => {
       );
   }
 
-  return !isMounted ? (
-    <View style={styles.cardContainer}>
-      <Text>Loading ...</Text>
-    </View>
-  ) : (
+  return (
     <View style={styles.cardContainer}>
       <Text style={styles.productName}>{product.item_name}</Text>
       <View style={styles.imageContainer}>

@@ -54,44 +54,60 @@ const cartSlice = createSlice({
     },
 
     removeFromCart: (state, action) => {
-      const itemId = action.payload;
-      state = state.products.filter((item) => item.id !== itemId);
+      const id = action.payload;
+      console.log(`removing item ${id} from store`);
+      state.products = state.products.filter((item) => item.id !== id);
+      console.log(`successfully removed ${id} from store`);
     },
 
     updateCartItemQuantity: (state, action) => {
       const { id, quantity } = action.payload;
-      console.log('updates: ', { id, quantity });
+      // console.log('updates: ', { id, quantity });
+      console.log(`updating item ${id} to quantity ${quantity}`);
       const existingItem = state.products.find((item) => item.id === id);
       if (existingItem) {
         existingItem.quantity = quantity;
+        console.log(`Successfully updated item ${id}`);
       }
+      console.log(`Item ${id} not found`);
     },
 
     clearCart: (state) => {
+      console.log('Clearing out cart');
       return [];
     },
 
     updateItemServiceType: (state, action) => {
-      const { itemId, serviceType, servicePrice } = action.payload;
-      const item = state.products.find((item) => item.id === itemId);
+      const { id, serviceType, servicePrice } = action.payload;
+      console.log(`Updating item ${id} service`);
+      const item = state.products.find((item) => item.id === id);
       console.log(item);
       if (item) {
         item.service = {
           type: serviceType,
           price: servicePrice,
         };
+        console.log(
+          `Successfully updated Item service ${item.id} to ${item.service.type}`
+        );
       }
+      console.log(`item ${id} not found`);
     },
 
     updateItemDeliveryType: (state, action) => {
-      const { itemId, deliveryType, deliveryPrice } = action.payload;
-      const item = state.products.find((item) => item.id === itemId);
+      const { id, deliveryType, deliveryPrice } = action.payload;
+      console.log(`Updating item ${id} delivery`);
+      const item = state.products.find((item) => item.id === id);
       if (item) {
         item.delivery = {
           type: deliveryType,
           price: deliveryPrice,
         };
+        console.log(
+          `Successfully updated item ${item.id} delivery to ${item.delivery.type}`
+        );
       }
+      console.log(`Item ${id} not found`);
     },
   },
 });
@@ -126,14 +142,14 @@ export const selectCartItemById = createSelector(
   (cartState, itemId) => {
     // if (!Boolean(cartItems.length)) return undefined;
     const item = cartState.products.find((item) => item.id === itemId);
-    console.log('item: ', item);
+    // console.log('item: ', item);
     return item;
   }
 );
 
 export const selectCartTotalPrice = createSelector(selectCart, (cartState) => {
   if (!Boolean(cartState.products.length)) return 0;
-  cartState.products.reduce((totalPrice, cartItem) => {
+  return cartState.products.reduce((totalPrice, cartItem) => {
     return (
       totalPrice +
       cartItem.quantity * cartItem.service.price * cartItem.delivery.price
@@ -145,9 +161,11 @@ export const selectCartTotalQuantity = createSelector(
   selectCart,
   (cartState) => {
     if (!Boolean(cartState.products.length)) return 0;
-    cartState.products.reduce((totalQty, cartItem) => {
+    const price = cartState.products.reduce((totalQty, cartItem) => {
       return totalQty + cartItem.quantity;
     }, 0);
+
+    return parseFloat(price.toFixed(2));
   }
 );
 
@@ -159,8 +177,9 @@ export const selectItemTotalPrice = createSelector(
   ],
 
   (cartState, item) => {
-    console.log('total price: ', item);
+    // console.log('total price: ', item);
     if (!item) return 0;
-    return item.quantity * item.service.price * item.delivery.price;
+    const price = item.quantity * item.service.price * item.delivery.price;
+    return parseFloat(price.toFixed(2));
   }
 );

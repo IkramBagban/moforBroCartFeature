@@ -60,6 +60,12 @@ const AllCard = () => {
     const filteredData = products.filter(
       (item) => item.item_cat1 == categoryName
     );
+
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+      setIsMounted(true);
+    }, []);
     return (
       <View style={styles.container}>
         <FlatList
