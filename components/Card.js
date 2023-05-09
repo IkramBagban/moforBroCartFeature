@@ -30,6 +30,8 @@ import {
   updateCartItemQuantity,
   updateItemServiceType,
   updateItemDelivery,
+  selectCartDeliveryType,
+  selectCartEmirateId,
 } from '../redux/cartSlice';
 import { Platform } from 'react-native';
 
@@ -39,7 +41,10 @@ const Card = ({ product }) => {
     selectCartItemById(state, product.id)
   );
 
-  const allProduct = useSelector(state=>state.cart.products)
+  const cartDeliveryType = useSelector(selectCartDeliveryType);
+  const cartEmirateId = useSelector(selectCartEmirateId);
+
+  const allProduct = useSelector((state) => state.cart.products);
 
   // const [cartItem, setCartItem] = useState(item);
 
@@ -52,53 +57,47 @@ const Card = ({ product }) => {
 
   const [isMounted, setIsMounted] = useState(false);
   const [selectedService, setSelectedService] = useState(
-    cartItem ? cartItem.service : { type: undefined, price: 0 }
+    cartItem ? cartItem.service.type : { type: undefined }
   );
   const [selectedDelivery, setSelectedDelivery] = useState(
-    cartItem ? cartItem.delivery : { type: undefined}
+    cartItem ? cartItem.delivery.type : { type: undefined }
   );
 
   const isDisabled = !Boolean(cartItem?.quantity > 0);
   // const hasServiceAndDelivery = Boolean(selectedService && selectedDelivery);
 
   const dispatch = useDispatch();
-  const delivery = [
-    { title: 'Folder' },
-    { title: 'Hanger' },
-  ];
+  const delivery = [{ title: 'Folder' }, { title: 'Hanger' }];
 
-  let deliveryType = '1';
+  // let deliveryType = '1';
   const filtered = useMemo(() => {
     return product.pricing
       ?.filter(
-        (obj) => obj.deliveryType == deliveryType && obj.emirate_id === '3'
+        (obj) =>
+          obj.deliveryType == cartDeliveryType &&
+          obj.emirate_id === cartEmirateId
       )
       .map(({ service, price }) => ({ service, price }));
   }, [product]);
 
   useEffect(() => {
-    // console.log('cartItem: ', cartItem);
-    // console.log('selectedService changed to: ', selectedService.type);
-    // console.log('selectedDelivery changed to: ', selectedDelivery.type);
-    setIsMounted(true);
+    console.log('cartItem: ', cartItem);
+    //   console.log('selectedService changed to: ', selectedService.type);
+    //   console.log('selectedDelivery changed to: ', selectedDelivery.type);
+    //   setIsMounted(true);
   }, [cartItem, selectedService, selectedDelivery]);
 
   function decreaseQtyHandler() {
-    if (selectedService) {
-      cartItem
-        ? cartItem.quantity === 1
-          ? dispatch(removeFromCart(cartItem.id))
-          : dispatch(
-              updateCartItemQuantity({
-                id: cartItem.id,
-                quantity: cartItem.quantity - 1,
-              })
-            )
-        : {};
-    } else
-      Platform.OS == 'web'
-        ? alert('Select a service')
-        : Alert.alert('please Select Any Serivce');
+    cartItem
+      ? cartItem.quantity === 1
+        ? dispatch(removeFromCart(cartItem.id))
+        : dispatch(
+            updateCartItemQuantity({
+              id: cartItem.id,
+              quantity: cartItem.quantity - 1,
+            })
+          )
+      : {};
   }
 
   function increaseQtyHandler() {
@@ -114,69 +113,51 @@ const Card = ({ product }) => {
         text1: 'Please select delivery',
       });
 
-    if (selectedService) {
-      cartItem
-        ? dispatch(
-            updateCartItemQuantity({
-              id: cartItem?.id,
-              quantity: cartItem.quantity + 1,
-            })
-          )
-        : (dispatch(
-            addToCart({
-              id: product.id,
-              cartItem:product,
-              name: product.item_name,
-              quantity: 1,
-              category: product.item_cat1,
-              service: selectedService,
-              delivery: selectedDelivery,
-              deliveryType
-            })
-          ),
-          Toast.show({
-            type: 'success',
-            text1: 'Added product to cart',
-          }));
-    } else
-      Platform.OS == 'web'
-        ? alert('Select a service')
-        : Alert.alert('please Select Any Serivce');
+    cartItem
+      ? dispatch(
+          updateCartItemQuantity({
+            id: cartItem?.id,
+            quantity: cartItem.quantity + 1,
+          })
+        )
+      : (dispatch(
+          addToCart({
+            product,
+            serviceType: selectedService.type,
+            delivery: selectedDelivery.type,
+            quantity: 1,
+          })
+        ),
+        Toast.show({
+          type: 'success',
+          text1: 'Added product to cart',
+        }));
   }
 
   function serviceButtonHandler(service) {
-    // console.log(service);
-    const s = {
-      type: service.service,
-      price: Number(parseFloat(service.price).toFixed(2)) ?? 1,
-    };
-    setSelectedService(s);
+    setSelectedService({ type: service });
     // console.log(selectedService);
     cartItem &&
       dispatch(
         updateItemServiceType({
-          id: product.id,
-          serviceType: s.type,
-          servicePrice: s.price,
+          id: cartItem.id,
+          serviceType: service,
+          // servicePrice: s.price,
         })
       );
 
-      console.log('allProduct',allProduct)
-      console.log('cartItem',allCartItems)
+    // console.log('allProduct', allProduct);
+    // console.log('cartItem', allCartItems);
   }
 
   function deliveryButtonHandler(delivery) {
-    // console.log(delivery);
-    const d = {
-      type: delivery.title,
-    };
-    setSelectedDelivery(d);
+    setSelectedDelivery({ type: delivery });
     // console.log(selectedDelivery);
     cartItem &&
       dispatch(
-        updateItemDeliveryT({
-          id: product.id,
-          deliveryType: d.type,
+        updateItemDelivery({
+          id: cartItem.id,
+          deliveryType: delivery,
         })
       );
   }
@@ -220,7 +201,7 @@ const Card = ({ product }) => {
                       ? styles.selectedButton
                       : {},
                   ]}
-                  onPress={() => serviceButtonHandler(item.item)}
+                  onPress={() => serviceButtonHandler(item.item.service)}
                   color={
                     selectedService.type == item.item.service
                       ? 'white'
@@ -248,7 +229,7 @@ const Card = ({ product }) => {
                   ? styles.selectedButton
                   : {},
               ]}
-              onPress={() => deliveryButtonHandler(item.item)}
+              onPress={() => deliveryButtonHandler(item.item.title)}
               color={
                 selectedDelivery.type == item.item.title ? 'white' : 'black'
               }

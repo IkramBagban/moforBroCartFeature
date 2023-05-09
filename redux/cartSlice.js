@@ -1,11 +1,4 @@
-import {
-  createEntityAdapter,
-  createSelector,
-  createSlice,
-} from '@reduxjs/toolkit';
-
-// const cartAdapter = createEntityAdapter();
-// const initialState = cartAdapter.getInitialState();
+import { createSelector, createSlice } from '@reduxjs/toolkit';
 
 const calculateServicePrice = (state, item, serviceType) => {
   const pricing = item.pricing.find(
@@ -19,23 +12,7 @@ const calculateServicePrice = (state, item, serviceType) => {
 };
 
 const initialState = {
-  products: [
-    // {
-    //   itemID: 1,
-    //   id: '',
-    //   name: '',
-    //   category: '',
-    //   service: {
-    //     type: '',
-    //     price: 0,
-    //   },
-    //   delivery: {
-    //     type: '',
-    //     price: 0,
-    //   },
-    //   quantity: 0,
-    // },
-  ],
+  products: [],
   deliveryType: '1',
   emirateId: '3',
 };
@@ -45,26 +22,6 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     addToCart: (state, action) => {
-      // const {
-      //   id,
-      //   name,
-      //   quantity,
-      //   category,
-      //   service,
-      //   delivery,
-      //   cartItem,
-      //   deliveryType,
-      // } = action.payload;
-      // state.products.push({
-      //   id,
-      //   name,
-      //   quantity,
-      //   category,
-      //   service,
-      //   delivery,
-      //   cartItem,
-      //   deliveryType,
-      // });
       const { product, serviceType, delivery, quantity } = action.payload;
       state.products.push({
         quantity,
@@ -74,17 +31,7 @@ const cartSlice = createSlice({
         ...product,
         service: {
           type: serviceType,
-          price: calculateServicePrice(state, product, serviceType),
-          // price: Number(
-          //   parseFloat(
-          //     product.pricing.find(
-          //       (obj) =>
-          //         obj.deliveryType == state.deliveryType &&
-          //         obj.emirate_id === state.emirateId &&
-          //         obj.service === serviceType
-          //     ).price
-          //   ).toFixed(2)
-          // ),
+          // price: calculateServicePrice(state, product, serviceType),
         },
       });
     },
@@ -112,7 +59,7 @@ const cartSlice = createSlice({
       if (item) {
         item.service = {
           type: serviceType,
-          price: calculateServicePrice(state, item, serviceType),
+          // price: calculateServicePrice(state, item, serviceType),
         };
         // console.log(
         //   `Successfully updated Item service ${item.id} to ${item.service.type}`
@@ -133,11 +80,6 @@ const cartSlice = createSlice({
     updateCartDeliveryType(state, action) {
       const deliveryType = action.payload;
       state.deliveryType = deliveryType;
-      // state.products.map((product) => {
-      //   product.deliveryType = deliveryType;
-      //   console.log('product' + product.deliveryType);
-      //   console.log('products' + deliveryType);
-      // });
     },
   },
 });
@@ -150,7 +92,7 @@ export const {
   clearCart,
   updateItemServiceType,
   updateItemDelivery,
-  updateDeliveryType,
+  updateCartDeliveryType,
 } = cartSlice.actions;
 
 // export memoized selector Fns
@@ -181,7 +123,12 @@ export const selectCartItemById = createSelector(
 export const selectCartTotalPrice = createSelector(selectCart, (cartState) => {
   if (!Boolean(cartState.products.length)) return 0;
   const price = cartState.products.reduce((totalPrice, cartItem) => {
-    return totalPrice + cartItem.quantity * cartItem.service.price;
+    return (
+      totalPrice +
+      cartItem.quantity *
+        calculateServicePrice(cartState, cartItem, cartItem.service.type)
+    );
+    // return totalPrice + cartItem.quantity * cartItem.service.price;
   }, 0);
 
   return parseFloat(price.toFixed(2));
@@ -207,7 +154,9 @@ export const selectItemTotalPrice = createSelector(
   (cartState, item) => {
     // console.log('total price: ', item);
     if (!item) return 0;
-    const price = item.quantity * item.service.price;
+    const price =
+      item.quantity * calculateServicePrice(cartState, item, item.service.type);
+    // const price = item.quantity * item.service.price;
     return Number(price.toFixed(2));
   }
 );
