@@ -2,10 +2,21 @@ import {
   createEntityAdapter,
   createSelector,
   createSlice,
-} from "@reduxjs/toolkit";
+} from '@reduxjs/toolkit';
 
 // const cartAdapter = createEntityAdapter();
 // const initialState = cartAdapter.getInitialState();
+
+const calculateServicePrice = (state, item, serviceType) => {
+  const pricing = item.pricing.find(
+    (obj) =>
+      obj.deliveryType == state.deliveryType &&
+      obj.emirate_id === state.emirateId &&
+      obj.service === serviceType
+  );
+  const price = pricing ? parseFloat(pricing.price) : 0;
+  return Number(price.toFixed(2));
+};
 
 const initialState = {
   products: [
@@ -25,24 +36,56 @@ const initialState = {
     //   quantity: 0,
     // },
   ],
+  deliveryType: '1',
+  emirateId: '3',
 };
 
 const cartSlice = createSlice({
-  name: "cart",
+  name: 'cart',
   initialState,
   reducers: {
     addToCart: (state, action) => {
-      const { id, name, quantity, category, service, delivery, cartItem, deliveryType } =
-        action.payload;
+      // const {
+      //   id,
+      //   name,
+      //   quantity,
+      //   category,
+      //   service,
+      //   delivery,
+      //   cartItem,
+      //   deliveryType,
+      // } = action.payload;
+      // state.products.push({
+      //   id,
+      //   name,
+      //   quantity,
+      //   category,
+      //   service,
+      //   delivery,
+      //   cartItem,
+      //   deliveryType,
+      // });
+      const { product, serviceType, delivery, quantity } = action.payload;
       state.products.push({
-        id,
-        name,
         quantity,
-        category,
-        service,
-        delivery,
-        cartItem,
-        deliveryType
+        delivery: {
+          type: delivery,
+        },
+        ...product,
+        service: {
+          type: serviceType,
+          price: calculateServicePrice(state, product, serviceType),
+          // price: Number(
+          //   parseFloat(
+          //     product.pricing.find(
+          //       (obj) =>
+          //         obj.deliveryType == state.deliveryType &&
+          //         obj.emirate_id === state.emirateId &&
+          //         obj.service === serviceType
+          //     ).price
+          //   ).toFixed(2)
+          // ),
+        },
       });
     },
 
@@ -54,18 +97,22 @@ const cartSlice = createSlice({
     updateCartItemQuantity: (state, action) => {
       const { id, quantity } = action.payload;
       const existingItem = state.products.find((item) => item.id === id);
-      if (existingItem) existingItem.quantity = quantity
+      if (existingItem) existingItem.quantity = quantity;
     },
 
     updateItemServiceType: (state, action) => {
-      const { id, serviceType, servicePrice } = action.payload;
+      const {
+        id,
+        serviceType,
+        // servicePrice
+      } = action.payload;
       // console.log(`Updating item ${id} service`);
       const item = state.products.find((item) => item.id === id);
       // console.log(item);
       if (item) {
         item.service = {
           type: serviceType,
-          price: servicePrice,
+          price: calculateServicePrice(state, item, serviceType),
         };
         // console.log(
         //   `Successfully updated Item service ${item.id} to ${item.service.type}`
@@ -83,15 +130,15 @@ const cartSlice = createSlice({
         };
       }
     },
-    updateDeliveryType(state,action){
-    const deliveryType = action.payload;
-    state.products.map((product)=>{
-      product.deliveryType = deliveryType
-      console.log('product' + product.deliveryType)
-      console.log('products' + deliveryType)
-    })
-
-    }
+    updateCartDeliveryType(state, action) {
+      const deliveryType = action.payload;
+      state.deliveryType = deliveryType;
+      // state.products.map((product) => {
+      //   product.deliveryType = deliveryType;
+      //   console.log('product' + product.deliveryType);
+      //   console.log('products' + deliveryType);
+      // });
+    },
   },
 });
 
@@ -103,7 +150,7 @@ export const {
   clearCart,
   updateItemServiceType,
   updateItemDelivery,
-  updateDeliveryType
+  updateDeliveryType,
 } = cartSlice.actions;
 
 // export memoized selector Fns
@@ -163,4 +210,14 @@ export const selectItemTotalPrice = createSelector(
     const price = item.quantity * item.service.price;
     return Number(price.toFixed(2));
   }
+);
+
+export const selectCartDeliveryType = createSelector(
+  selectCart,
+  (cartState) => cartState.deliveryType
+);
+
+export const selectCartEmirateId = createSelector(
+  selectCart,
+  (cartState) => cartState.emirateId
 );
