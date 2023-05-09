@@ -33,35 +33,16 @@ const ReviewOrder = ({ route }) => {
   const deliveryDateString = dates.deliveryDate.toISOString().substring(0, 10);
   const notes = route.params.notes;
 
-  // -----------------------
-  // const cartItems = filteredCart.products.map((product, index) => ({
-  //   id: product.itemID,
-  //   name: product.item_name,
-  //   img: product.itemImage,
-  //   cat: product.cat,
-  //   product: product,
-  //   selectedServiceButton: filteredCart.others[index].selectedButton,
-  //   selectedDeliveryButton: filteredCart.others[index].selectDelivery,
-  //   price: product.pricing.filter(
-  //     (item) =>
-  //       item.emirate_id === '3' &&
-  //       item.deliveryType == filteredCart.items[index].deliveryType &&
-  //       item.service == filteredCart.others[index].selectedButton
-  //   ),
-  //   filDel: filteredCart.items[index].deliveryType,
-  //   qty: filteredCart.others[index].qty,
-  // }));
-
   const cartItems = useSelector(selectAllCartItems);
   const totalPrice = useSelector(selectCartTotalPrice);
   const totalQty = useSelector(selectCartTotalQuantity);
-
   const handleDeleteItem = (itemID) => {
     dispatch(removeFromCart(itemID));
     };
 
   const handleUpdateQuantity = (itemID, action) => {
     const item = useSelector((state) => selectCartItemById(state, itemID));
+    
     if (
       item &&
       (action === 'increase' || (action === 'decrease' && item.qty > 0))
@@ -70,7 +51,7 @@ const ReviewOrder = ({ route }) => {
         ? dispatch(removeFromCart(item.id))
         : dispatch(
             updateCartItemQuantity({
-              id: itemID,
+              id: 7,
               quantity:
                 action === 'increase' ? item.quantity + 1 : item.quantity - 1,
             })
@@ -83,6 +64,7 @@ const ReviewOrder = ({ route }) => {
       <View style={styles.item}>
         <View style={{ flex: 2 }}>
           <Text style={styles.itemName}>{item.name}</Text>
+          <Text style={styles.itemName}> {item.service.type}  & {item.delivery.type}</Text>
         </View>
         <View
           style={{
@@ -103,7 +85,7 @@ const ReviewOrder = ({ route }) => {
           <Text style={styles.itemName}>
             {' '}
             {
-             (item.qty * item.service.price).toFixed(2)
+(item?.quantity * item.service?.price).toFixed(2)
              
             }
           </Text>
@@ -120,7 +102,8 @@ const ReviewOrder = ({ route }) => {
         <Text style={styles.dateText}>
           mode :{' '}
           {
-            '(deleveryType) standard/express/same day'
+            
+            cartItems[0]?.deliveryType
           }{' '}
         </Text>
         <Text style={styles.dateText}>pickup date : {pickupDateString} </Text>

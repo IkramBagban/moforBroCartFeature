@@ -11,7 +11,7 @@ import Button from '../components/Button';
 import { Colors } from '../constants/colors';
 import { reviewData } from '../data';
 import { useDispatch, useSelector } from 'react-redux';
-import { getTotal, updateDeliveryType } from '../redux/cartSlice';
+import { getTotal, updateDeliveryType, updateItemServiceType } from '../redux/cartSlice';
 import { TouchableOpacity } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { selectCartTotalPrice } from '../redux/cartSlice';
@@ -21,26 +21,24 @@ const SelectService = ({ navigation }) => {
     pickupDate: new Date(),
     deliveryDate: new Date(),
   });
+  const cartItems = useSelector((state) => state.cart.products);
 
   const [selectedButton, setSelectedButton] = useState('1');
+  const [products] = useState(cartItems)
 
   const dispatch = useDispatch();
-  const products = useSelector((state) => state.cart.products);
   const totalPrice = useSelector(selectCartTotalPrice);
   useEffect(() => {
-    // products.map((product, index) => {
-    //   dispatch(
-    //     getTotal({
-    //       itemID: product.itemID,
-    //       service: items[index].service,
-    //       deliveryType: selectedButton,
-    //     })
-    //   );
     // });
-    dispatch(updateDeliveryType(selectedButton))
-    console.log('selectedType', selectedButton);
+      products.map((product, index) => {
+        const filteredPricingArray = product.cartItem.pricing.find(
+          (price) => price.deliveryType == selectedButton && price.service === product.service.type
+        );
+        dispatch(updateDeliveryType({deliveryType:selectedButton, servicePrice:filteredPricingArray.price }))    
+  })
   }, [selectedButton]);
 
+  
   const [showPicker, setShowPicker] = useState(false);
   const [pickerType, setPickerType] = useState('');
   const [notes, setNotes] = useState('');
@@ -50,7 +48,6 @@ const SelectService = ({ navigation }) => {
   const handlePickerOpen = (type) => {
     setShowPicker(true);
     setPickerType(type);
-    console.log('dates', dates);
   };
 
   const handlePickerClose = () => {
@@ -61,7 +58,6 @@ const SelectService = ({ navigation }) => {
     const currentDate = selectedDate || dates[pickerType];
     setDates({ ...dates, [pickerType]: currentDate });
     handlePickerClose();
-    console.log('lastdates', dates);
   };
 
   const onNotesChange = (text) => {
@@ -85,7 +81,6 @@ const SelectService = ({ navigation }) => {
             }
             onPress={() => {
               setSelectedButton(item.c_deliveryTypeID);
-              // console.log('selected button,',selectedButton)
             }}
           />
         )}

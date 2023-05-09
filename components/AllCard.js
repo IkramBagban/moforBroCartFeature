@@ -77,13 +77,13 @@ const AllCard = () => {
         />
         <Button
           title="Next"
-          onPress={() =>
-            totalQty > 0
-              ? navigation.navigate('SelectService')
-              : Toast.show({
-                  type: 'error',
-                  text1: 'Please add a product to cart',
-                })
+          onPress={() =>  navigation.navigate('SelectService')
+            // totalQty > 0
+            //   ? navigation.navigate('SelectService')
+            //   : Toast.show({
+            //       type: 'error',
+            //       text1: 'Please add a product to cart',
+            //     })
           }
         />
       </View>

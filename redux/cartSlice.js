@@ -1,30 +1,7 @@
-import {
-  createEntityAdapter,
-  createSelector,
-  createSlice,
-} from "@reduxjs/toolkit";
-
-// const cartAdapter = createEntityAdapter();
-// const initialState = cartAdapter.getInitialState();
+import { createSelector, createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  products: [
-    // {
-    //   itemID: 1,
-    //   id: '',
-    //   name: '',
-    //   category: '',
-    //   service: {
-    //     type: '',
-    //     price: 0,
-    //   },
-    //   delivery: {
-    //     type: '',
-    //     price: 0,
-    //   },
-    //   quantity: 0,
-    // },
-  ],
+  products: [],
 };
 
 const cartSlice = createSlice({
@@ -32,8 +9,16 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     addToCart: (state, action) => {
-      const { id, name, quantity, category, service, delivery, cartItem, deliveryType } =
-        action.payload;
+      const {
+        id,
+        name,
+        quantity,
+        category,
+        service,
+        delivery,
+        cartItem,
+        deliveryType,
+      } = action.payload;
       state.products.push({
         id,
         name,
@@ -42,7 +27,7 @@ const cartSlice = createSlice({
         service,
         delivery,
         cartItem,
-        deliveryType
+        deliveryType,
       });
     },
 
@@ -54,25 +39,15 @@ const cartSlice = createSlice({
     updateCartItemQuantity: (state, action) => {
       const { id, quantity } = action.payload;
       const existingItem = state.products.find((item) => item.id === id);
-      if (existingItem) existingItem.quantity = quantity
+      if (existingItem) existingItem.quantity = quantity;
     },
 
     updateItemServiceType: (state, action) => {
       const { id, serviceType, servicePrice } = action.payload;
-      // console.log(`Updating item ${id} service`);
       const item = state.products.find((item) => item.id === id);
-      // console.log(item);
-      if (item) {
-        item.service = {
-          type: serviceType,
-          price: servicePrice,
-        };
-        // console.log(
-        //   `Successfully updated Item service ${item.id} to ${item.service.type}`
-        // );
-      }
-      // console.log(`item ${id} not found`);
-    },
+      if (item) 
+        item.service = {type: serviceType, price: servicePrice};
+      },
 
     updateItemDelivery: (state, action) => {
       const { id, delivery } = action.payload;
@@ -83,15 +58,13 @@ const cartSlice = createSlice({
         };
       }
     },
-    updateDeliveryType(state,action){
-    const deliveryType = action.payload;
-    state.products.map((product)=>{
-      product.deliveryType = deliveryType
-      console.log('product' + product.deliveryType)
-      console.log('products' + deliveryType)
-    })
-
-    }
+    updateDeliveryType(state, action) {
+      const { servicePrice, deliveryType } = action.payload;
+      state.products.map((product) => {
+        product.deliveryType = deliveryType;
+        product.service.price = servicePrice;
+      });
+    },
   },
 });
 
@@ -103,7 +76,7 @@ export const {
   clearCart,
   updateItemServiceType,
   updateItemDelivery,
-  updateDeliveryType
+  updateDeliveryType,
 } = cartSlice.actions;
 
 // export memoized selector Fns

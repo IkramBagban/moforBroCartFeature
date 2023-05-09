@@ -12,12 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Button from './Button';
 import Toast from 'react-native-toast-message';
 import { Colors } from '../constants/colors';
-// import {
-//   addToCart,
-//   getTotal,
-//   removeItem,
-//   updateOthers,
-// } from "../redux/cartSlice";
+
 
 import {
   addToCart,
@@ -76,12 +71,7 @@ const Card = ({ product }) => {
       .map(({ service, price }) => ({ service, price }));
   }, [product]);
 
-  useEffect(() => {
-    // console.log('cartItem: ', cartItem);
-    // console.log('selectedService changed to: ', selectedService.type);
-    // console.log('selectedDelivery changed to: ', selectedDelivery.type);
-    setIsMounted(true);
-  }, [cartItem, selectedService, selectedDelivery]);
+  
 
   function decreaseQtyHandler() {
     if (selectedService) {
@@ -95,24 +85,11 @@ const Card = ({ product }) => {
               })
             )
         : {};
-    } else
-      Platform.OS == 'web'
-        ? alert('Select a service')
-        : Alert.alert('please Select Any Serivce');
+    } else Alert.alert('please Select Any Serivce');
   }
 
   function increaseQtyHandler() {
-    if (!selectedService.type)
-      return Toast.show({
-        type: 'error',
-        text1: 'Please select a service',
-      });
-
-    if (!selectedDelivery.type)
-      return Toast.show({
-        type: 'error',
-        text1: 'Please select delivery',
-      });
+    if (!selectedService.type || !selectedDelivery.type) return
 
     if (selectedService) {
       cartItem
@@ -124,20 +101,17 @@ const Card = ({ product }) => {
           )
         : (dispatch(
             addToCart({
-              id: product.id,
               cartItem:product,
+              service: selectedService,
+              delivery: selectedDelivery,
+              id: product.id,
               name: product.item_name,
               quantity: 1,
               category: product.item_cat1,
-              service: selectedService,
-              delivery: selectedDelivery,
               deliveryType
             })
-          ),
-          Toast.show({
-            type: 'success',
-            text1: 'Added product to cart',
-          }));
+          )
+          );
     } else
       Platform.OS == 'web'
         ? alert('Select a service')
@@ -145,7 +119,6 @@ const Card = ({ product }) => {
   }
 
   function serviceButtonHandler(service) {
-    // console.log(service);
     const s = {
       type: service.service,
       price: Number(parseFloat(service.price).toFixed(2)) ?? 1,
@@ -158,15 +131,15 @@ const Card = ({ product }) => {
           id: product.id,
           serviceType: s.type,
           servicePrice: s.price,
+          deliveryType
         })
       );
 
       console.log('allProduct',allProduct)
-      console.log('cartItem',allCartItems)
   }
 
   function deliveryButtonHandler(delivery) {
-    // console.log(delivery);
+    // console.log(delivery); 
     const d = {
       type: delivery.title,
     };
@@ -174,7 +147,7 @@ const Card = ({ product }) => {
     // console.log(selectedDelivery);
     cartItem &&
       dispatch(
-        updateItemDeliveryT({
+        updateItemDelivery({
           id: product.id,
           deliveryType: d.type,
         })
