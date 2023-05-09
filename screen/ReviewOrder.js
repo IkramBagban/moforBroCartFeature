@@ -34,23 +34,6 @@ const ReviewOrder = ({ route }) => {
   const notes = route.params.notes;
 
   // -----------------------
-  // const cartItems = filteredCart.products.map((product, index) => ({
-  //   id: product.itemID,
-  //   name: product.item_name,
-  //   img: product.itemImage,
-  //   cat: product.cat,
-  //   product: product,
-  //   selectedServiceButton: filteredCart.others[index].selectedButton,
-  //   selectedDeliveryButton: filteredCart.others[index].selectDelivery,
-  //   price: product.pricing.filter(
-  //     (item) =>
-  //       item.emirate_id === '3' &&
-  //       item.deliveryType == filteredCart.items[index].deliveryType &&
-  //       item.service == filteredCart.others[index].selectedButton
-  //   ),
-  //   filDel: filteredCart.items[index].deliveryType,
-  //   qty: filteredCart.others[index].qty,
-  // }));
 
   const cartItems = useSelector(selectAllCartItems);
   const totalPrice = useSelector(selectCartTotalPrice);
@@ -58,19 +41,18 @@ const ReviewOrder = ({ route }) => {
 
   const handleDeleteItem = (itemID) => {
     dispatch(removeFromCart(itemID));
-    };
+  };
 
-  const handleUpdateQuantity = (itemID, action) => {
-    const item = useSelector((state) => selectCartItemById(state, itemID));
+  const handleUpdateQuantity = (item, action) => {
     if (
       item &&
-      (action === 'increase' || (action === 'decrease' && item.qty > 0))
+      (action === 'increase' || (action === 'decrease' && item.quantity > 0))
     ) {
       item.quantity === 1 && action === 'decrease'
         ? dispatch(removeFromCart(item.id))
         : dispatch(
             updateCartItemQuantity({
-              id: itemID,
+              id: item.id,
               quantity:
                 action === 'increase' ? item.quantity + 1 : item.quantity - 1,
             })
@@ -93,19 +75,16 @@ const ReviewOrder = ({ route }) => {
         >
           <Button
             title="-"
-            onPress={() => handleUpdateQuantity(item.id, 'decrease')}
+            onPress={() => handleUpdateQuantity(item, 'decrease')}
           />
           <Text style={styles.itemName}> {item.quantity}</Text>
           <Button
             title="+"
-            onPress={() => handleUpdateQuantity(item.id, 'increase')}
+            onPress={() => handleUpdateQuantity(item, 'increase')}
           />
           <Text style={styles.itemName}>
             {' '}
-            {
-             (item.qty * item.service.price).toFixed(2)
-             
-            }
+            {Number(parseFloat(item.quantity * item.service.price).toFixed(2))}
           </Text>
         </View>
         <Button title="delete" onPress={() => handleDeleteItem(item.id)} />
@@ -118,10 +97,7 @@ const ReviewOrder = ({ route }) => {
       <Title text="Cart List Item here"></Title>
       <View>
         <Text style={styles.dateText}>
-          mode :{' '}
-          {
-            '(deleveryType) standard/express/same day'
-          }{' '}
+          mode : {'(deleveryType) standard/express/same day'}{' '}
         </Text>
         <Text style={styles.dateText}>pickup date : {pickupDateString} </Text>
         <Text style={styles.dateText}>

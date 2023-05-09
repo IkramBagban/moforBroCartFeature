@@ -31,7 +31,7 @@ const cartSlice = createSlice({
         ...product,
         service: {
           type: serviceType,
-          // price: calculateServicePrice(state, product, serviceType),
+          price: calculateServicePrice(state, product, serviceType),
         },
       });
     },
@@ -59,7 +59,7 @@ const cartSlice = createSlice({
       if (item) {
         item.service = {
           type: serviceType,
-          // price: calculateServicePrice(state, item, serviceType),
+          price: calculateServicePrice(state, item, serviceType),
         };
         // console.log(
         //   `Successfully updated Item service ${item.id} to ${item.service.type}`

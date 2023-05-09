@@ -54,13 +54,14 @@ const Card = ({ product }) => {
 
   const allCartItems = useSelector(selectAllCartItems);
   const totalPrice = useSelector(selectCartTotalPrice);
-
   const [isMounted, setIsMounted] = useState(false);
   const [selectedService, setSelectedService] = useState(
-    cartItem ? cartItem.service.type : { type: undefined }
+    cartItem ? cartItem.service : { type: undefined }
+    // cartItem?.service
   );
   const [selectedDelivery, setSelectedDelivery] = useState(
-    cartItem ? cartItem.delivery.type : { type: undefined }
+    cartItem ? cartItem.delivery : { type: undefined }
+    // cartItem?.delivery
   );
 
   const isDisabled = !Boolean(cartItem?.quantity > 0);
@@ -80,12 +81,12 @@ const Card = ({ product }) => {
       .map(({ service, price }) => ({ service, price }));
   }, [product]);
 
-  useEffect(() => {
-    console.log('cartItem: ', cartItem);
-    //   console.log('selectedService changed to: ', selectedService.type);
-    //   console.log('selectedDelivery changed to: ', selectedDelivery.type);
-    //   setIsMounted(true);
-  }, [cartItem, selectedService, selectedDelivery]);
+  // useEffect(() => {
+  // console.log('cartItem: ', cartItem);
+  //   console.log('selectedService changed to: ', selectedService.type);
+  //   console.log('selectedDelivery changed to: ', selectedDelivery.type);
+  //   setIsMounted(true);
+  // }, [cartItem, selectedService, selectedDelivery]);
 
   function decreaseQtyHandler() {
     cartItem
@@ -126,7 +127,13 @@ const Card = ({ product }) => {
             serviceType: selectedService.type,
             delivery: selectedDelivery.type,
             quantity: 1,
-          })
+          }),
+          console.log(
+            'delivery: ',
+            selectedDelivery,
+            '\nService: ',
+            selectedService
+          )
         ),
         Toast.show({
           type: 'success',
