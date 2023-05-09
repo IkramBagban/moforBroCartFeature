@@ -29,8 +29,8 @@ import {
   selectCartTotalPrice,
   updateCartItemQuantity,
   updateItemServiceType,
-  updateItemDeliveryType,
-} from '../features/cart/cartSlice';
+  updateItemDelivery,
+} from '../redux/cartSlice';
 import { Platform } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
@@ -38,6 +38,8 @@ const Card = ({ product }) => {
   const cartItem = useSelector((state) =>
     selectCartItemById(state, product.id)
   );
+
+  const allProduct = useSelector(state=>state.cart.products)
 
   // const [cartItem, setCartItem] = useState(item);
 
@@ -50,10 +52,10 @@ const Card = ({ product }) => {
 
   const [isMounted, setIsMounted] = useState(false);
   const [selectedService, setSelectedService] = useState(
-    cartItem ? cartItem.service : { type: undefined, price: 1 }
+    cartItem ? cartItem.service : { type: undefined, price: 0 }
   );
   const [selectedDelivery, setSelectedDelivery] = useState(
-    cartItem ? cartItem.delivery : { type: undefined, price: 1 }
+    cartItem ? cartItem.delivery : { type: undefined}
   );
 
   const isDisabled = !Boolean(cartItem?.quantity > 0);
@@ -61,8 +63,8 @@ const Card = ({ product }) => {
 
   const dispatch = useDispatch();
   const delivery = [
-    { title: 'Folder', price: 6 },
-    { title: 'Hanger', price: 20 },
+    { title: 'Folder' },
+    { title: 'Hanger' },
   ];
 
   let deliveryType = '1';
@@ -123,11 +125,13 @@ const Card = ({ product }) => {
         : (dispatch(
             addToCart({
               id: product.id,
+              cartItem:product,
               name: product.item_name,
               quantity: 1,
               category: product.item_cat1,
               service: selectedService,
               delivery: selectedDelivery,
+              deliveryType
             })
           ),
           Toast.show({
@@ -156,22 +160,23 @@ const Card = ({ product }) => {
           servicePrice: s.price,
         })
       );
+
+      console.log('allProduct',allProduct)
+      console.log('cartItem',allCartItems)
   }
 
   function deliveryButtonHandler(delivery) {
     // console.log(delivery);
     const d = {
       type: delivery.title,
-      price: Number(parseFloat(delivery.price).toFixed(2)) ?? 1,
     };
     setSelectedDelivery(d);
     // console.log(selectedDelivery);
     cartItem &&
       dispatch(
-        updateItemDeliveryType({
+        updateItemDeliveryT({
           id: product.id,
           deliveryType: d.type,
-          deliveryPrice: d.price,
         })
       );
   }

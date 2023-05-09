@@ -15,11 +15,10 @@ import { data } from '../data';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 
 import { useSelector } from 'react-redux';
-import { useGetProductsQuery } from '../features/api/apiSlice';
 import {
   selectCartTotalPrice,
   selectCartTotalQuantity,
-} from '../features/cart/cartSlice';
+} from '../redux/cartSlice';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
 
 const renderTabBar = (props) => (
@@ -37,22 +36,12 @@ const renderTabBar = (props) => (
 
 const AllCard = () => {
   const navigation = useNavigation();
-  // const {
-  //   data: products = [],
-  //   isLoading: productsLoading,
-  //   isFetching,
-  //   error,
-  //   fetch,
-  // } = useGetProductsQuery();
 
-  // if (error) {
-  //   Alert.alert(error);
-  // }
 
   const totalPrice = useSelector(selectCartTotalPrice);
   const totalQty = useSelector(selectCartTotalQuantity);
 
-  const [products, setProducts] = useState(data);
+  const [products] = useState(data);
   const [isLoading, setIsLoading] = useState(true);
   const [index, setIndex] = useState(0);
 

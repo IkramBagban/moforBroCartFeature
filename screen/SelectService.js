@@ -11,10 +11,10 @@ import Button from '../components/Button';
 import { Colors } from '../constants/colors';
 import { reviewData } from '../data';
 import { useDispatch, useSelector } from 'react-redux';
-import { getTotal } from '../redux/cartSlice';
+import { getTotal, updateDeliveryType } from '../redux/cartSlice';
 import { TouchableOpacity } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { selectCartTotalPrice } from '../features/cart/cartSlice';
+import { selectCartTotalPrice } from '../redux/cartSlice';
 
 const SelectService = ({ navigation }) => {
   const [dates, setDates] = useState({
@@ -26,7 +26,6 @@ const SelectService = ({ navigation }) => {
 
   const dispatch = useDispatch();
   const products = useSelector((state) => state.cart.products);
-  const items = useSelector((state) => state.cart.items);
   const totalPrice = useSelector(selectCartTotalPrice);
   useEffect(() => {
     // products.map((product, index) => {
@@ -38,6 +37,7 @@ const SelectService = ({ navigation }) => {
     //     })
     //   );
     // });
+    dispatch(updateDeliveryType(selectedButton))
     console.log('selectedType', selectedButton);
   }, [selectedButton]);
 
@@ -45,7 +45,7 @@ const SelectService = ({ navigation }) => {
   const [pickerType, setPickerType] = useState('');
   const [notes, setNotes] = useState('');
 
-  const total = useSelector((state) => state.cart.total);
+  // const total = useSelector((state) => state.cart.total);
 
   const handlePickerOpen = (type) => {
     setShowPicker(true);

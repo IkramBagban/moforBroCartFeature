@@ -22,7 +22,7 @@ import {
   selectCartTotalQuantity,
   selectItemTotalPrice,
   updateCartItemQuantity,
-} from '../features/cart/cartSlice';
+} from '../redux/cartSlice';
 
 const ReviewOrder = ({ route }) => {
   const filteredCart = useSelector((state) => state.cart);
@@ -58,16 +58,7 @@ const ReviewOrder = ({ route }) => {
 
   const handleDeleteItem = (itemID) => {
     dispatch(removeFromCart(itemID));
-    // filteredCart.items.map((i) => {
-    //   dispatch(
-    //     getTotal({
-    //       itemID: i.itemID,
-    //       service: i.service,
-    //       deliveryType: i.deliveryType,
-    //     })
-    //   );
-    // });
-  };
+    };
 
   const handleUpdateQuantity = (itemID, action) => {
     const item = useSelector((state) => selectCartItemById(state, itemID));
@@ -111,10 +102,10 @@ const ReviewOrder = ({ route }) => {
           />
           <Text style={styles.itemName}>
             {' '}
-            {() => {
-              const price = item.qty * item.service.price * item.delivery.price;
-              parseFloat(price).toFixed(2);
-            }}
+            {
+             (item.qty * item.service.price).toFixed(2)
+             
+            }
           </Text>
         </View>
         <Button title="delete" onPress={() => handleDeleteItem(item.id)} />
@@ -129,7 +120,7 @@ const ReviewOrder = ({ route }) => {
         <Text style={styles.dateText}>
           mode :{' '}
           {
-            'show the mode which mode we select(deleveryType) standard/express/same day'
+            '(deleveryType) standard/express/same day'
           }{' '}
         </Text>
         <Text style={styles.dateText}>pickup date : {pickupDateString} </Text>
